@@ -101,8 +101,14 @@ export default function WaitingMessage() {
   const [currentMessage, setCurrentMessage] = useState(0);
   const [messageIdx, setMessageIdx] = useState(0);
   const [shuffledMessages] = useState(getShuffledMessages(waitingTips));
-
+  const [dots, setDots] = useState("");
   useEffect(() => {
+    const dotsInterval = setInterval(() => {
+      setDots((prev) => {
+        if (prev.length >= 3) return "";
+        return prev + ".";
+      });
+    }, 500);
     // Message rotation 10seconds
     const messageInterval = setInterval(() => {
       setCurrentMessage((prev) => (prev + 1) % waitingMessages.length);
@@ -127,6 +133,7 @@ export default function WaitingMessage() {
 
     return () => {
       timeouts.forEach(clearTimeout);
+      clearInterval(dotsInterval);
       clearInterval(messageInterval);
     };
   }, []);
@@ -141,6 +148,7 @@ export default function WaitingMessage() {
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-4 transition-all duration-500 ease-in-out">
             {waitingMessages[currentMessage]}
+            <span className="w-5 inline-block text-left">{dots}</span>
           </h2>
           <p className="text-gray-600 text-lg">Please wait a moment!</p>
         </div>
